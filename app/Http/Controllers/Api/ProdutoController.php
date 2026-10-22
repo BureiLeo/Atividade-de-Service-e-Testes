@@ -7,14 +7,9 @@ use App\Http\Requests\ProdutoRequest;
 use App\Http\Resources\ProdutoResource;
 use App\Models\Produto;
 use App\Services\ProdutoService;
-use Illuminate\Http\Request;
 
 class ProdutoController extends Controller
 {
-    
-    public function __construct(private ProdutoService $service)
-    {}
-
     /**
      * Display a listing of the resource.
      */
@@ -26,11 +21,9 @@ class ProdutoController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(ProdutoRequest $request)
+    public function store(ProdutoRequest $request, ProdutoService $service)
     {
-        $dados = $request->validated();
-
-        $produto =  $this->service->create($dados);
+        $produto = $service->create($request->validated());
 
         // Código 201 : Recurso Criado
         return new ProdutoResource($produto);
@@ -47,11 +40,9 @@ class ProdutoController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(ProdutoRequest $request, Produto $produto)
+    public function update(ProdutoRequest $request, Produto $produto, ProdutoService $service)
     {
-        $dados = $request->validated();
-
-        $produto->update($dados);
+        $produto = $service->update($produto, $request->validated());
 
         return new ProdutoResource($produto);
     }
@@ -62,7 +53,7 @@ class ProdutoController extends Controller
     public function destroy(Produto $produto)
     {
         $produto->delete();
+
         return response()->noContent(); // 204
     }
-
 }
